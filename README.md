@@ -1,3 +1,3 @@
 # attendance-portal
 
-A nodejs application to manage student attendance.
+A nodejs application to manage AICTE registration.
