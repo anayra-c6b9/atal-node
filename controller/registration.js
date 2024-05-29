@@ -3,15 +3,17 @@ import { Event } from "../models/events.js";
 import { ObjectId } from "mongodb";
 
 const postForm = (req, res, next) => {
-  const prefix = req.query.prefix;
-  const name = req.query.name;
-  const institution = req.query.institution;
-  const department = req.query.department;
-  const contact = req.query.contact;
-  const email = req.query.email;
-  const eventId = req.query.eventId;
 
-  console.log(req.query);
+
+  const prefix = req.body.prefix;
+  const name = req.body.name;
+  const institution = req.body.institution;
+  const department = req.body.department;
+  const contact = req.body.contact;
+  const email = req.body.email;
+  const eventId = req.body.eventId;
+
+  // console.log(req.query);
   if (
     !prefix ||
     !name ||
@@ -65,6 +67,7 @@ const postForm = (req, res, next) => {
 };
 
 const getEvents = (req, res, next) => {
+  // console.log("executing events")
   Event.find()
     .then((result) => {
       if (!result) {
@@ -112,8 +115,8 @@ const getEventById = (req, res, next) => {
         });
       }
 
-      return res.status(201).json({
-        status: 201,
+      return res.status(200).json({
+        status: 200,
         message: "Event found",
         success: true,
         data: result,

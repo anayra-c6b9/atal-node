@@ -4,6 +4,53 @@ import { SECRET } from "./auth.js";
 import { ObjectId } from "mongodb";
 import { Admin } from "../models/admin.js";
 
+const checkToken = (req, res, next) => {
+  const token = req.cookies.jwtToken;
+  
+
+  if (!token) {
+    return res.status(401).json({
+      status: 401,
+      message: "Unauthorized user",
+      success: false,
+    });
+  }
+
+  jwt.verify(token, SECRET, (err, decoded) => {
+    if (err) {
+      return res.status(401).json({
+        status: 401,
+        message: "Unauthorized user",
+        success: false,
+      });
+    }
+
+    Admin.findById(decoded.adminId)
+    .then(response => {
+      if(!response) {
+        return res.status(401).json({
+          status: 404,
+          message: "User not found",
+          success: false,
+        });
+      }
+
+      res.status(200).json({
+        status: 200,
+        message: "Authorized",
+        success: true,
+      })
+    })
+    .catch(() => {
+      res.status(500).json({
+        status: 500,
+        message: "Internal Server Error",
+        success: false
+      })
+    })
+  })
+}
+
 const getEventParticipants = (req, res, next) => {
   const token = req.cookies.jwtToken;
   if (!token) {
@@ -24,7 +71,7 @@ const getEventParticipants = (req, res, next) => {
     }
 
     // token is valid
-    const eventId = req.query.eventId;
+    const eventId = req.body.eventId;
     if (!eventId) {
       return res.status(400).json({
         status: 400,
@@ -91,8 +138,9 @@ const getParticipantById = (req, res, next) => {
     }
 
     // token is valid
-    const participantId = req.query.userId;
-    if (!participantId) {
+    const participantId = req.body.userId;
+    const eventId = req.body.eventId;
+    if (!participantId || !eventId) {
       return res.status(400).json({
         status: 400,
         message: "Missing Fields",
@@ -121,6 +169,14 @@ const getParticipantById = (req, res, next) => {
           });
         }
 
+        if(result.event_id.toString() !== eventId){
+          return res.status(404).json({
+            status: 404,
+            message: "Missing Fields",
+            success: false,
+          });
+        }
+
         return res.status(200).json({
           status: 200,
           message: "Participant Found",
@@ -138,4 +194,71 @@ const getParticipantById = (req, res, next) => {
   });
 };
 
-export { getEventParticipants, getParticipantById };
+const deleteParticipantById = (req, res, next) => {
+  const token = req.cookies.jwtToken;
+  if (!token) {
+    return res.status(401).json({
+      status: 401,
+      message: "Unauthorized user",
+      success: false,
+    });
+  }
+
+  jwt.verify(token, SECRET, (err, decoded) => {
+    if (err) {
+      return res.status(401).json({
+        status: 401,
+        message: "Unauthorized user",
+        success: false,
+      });
+    }
+
+    // token is valid
+    const participantId = req.body.userId;
+    if (!participantId) {
+      return res.status(400).json({
+        status: 400,
+        message: "Missing Fields",
+        success: false,
+      });
+    }
+
+    Admin.findById(decoded.adminId)
+      .then((admindata) => {
+        if (!admindata) {
+          return res.status(401).json({
+            status: 401,
+            message: "Unauthorized user",
+            success: false,
+          });
+        }
+
+        return Participant.findByIdAndDelete(participantId);
+      })
+      .then((result) => {
+        if (!result) {
+          return res.status(404).json({
+            status: 404,
+            message: "Missing Fields",
+            success: false,
+          });
+        }
+
+        return res.status(200).json({
+          status: 200,
+          message: "Participant Deleted",
+          success: true,
+          data: result,
+        });
+      })
+      .catch((err) => {
+        return res.status(500).json({
+          status: 500,
+          message: "Internal Server Error",
+          success: false,
+        });
+      });
+  });
+}
+
+export { getEventParticipants, getParticipantById, checkToken, deleteParticipantById };

@@ -5,12 +5,29 @@ import * as dotenv from "dotenv";
 import { default as cookieParser } from "cookie-parser";
 import { adminRouter } from "./routes/admin.js";
 import { registrationRouter } from "./routes/registration.js";
+import { default as cors} from "cors"
 
 // configuring dotenv to enable reading environment variables
 dotenv.config();
 
 // creating an instance of express server
 const app = express();
+
+//cors
+const whitelist = ['http://localhost:4200']; 
+const corsOptionsDelegate = (req, callback) => {
+  let corsOptions;
+
+  if (whitelist.indexOf(req.header('Origin')) !== -1) {
+    corsOptions = { origin: true, credentials: true }; // Reflect (enable) the requested origin and credentials
+  } else {
+    corsOptions = { origin: '*' }; // Disable credentials for other origins
+  }
+
+  callback(null, corsOptions); // Callback expects two parameters: error and options
+};
+
+app.use(cors(corsOptionsDelegate));
 
 // configuring the json and encode type
 app.use(express.json());

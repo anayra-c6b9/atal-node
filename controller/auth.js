@@ -5,10 +5,9 @@ import { default as jwt } from "jsonwebtoken";
 export const SECRET = "this is a secret key";
 
 const postAdminLogin = (req, res, next) => {
-  const userId = req.query.userId;
-  const password = req.query.password;
+  const userId = req.body.userId;
+  const password = req.body.password;
 
-  // console.log(req.query);
 
   if (!userId || !password) {
     return res.status(400).json({
@@ -56,20 +55,20 @@ const postAdminLogin = (req, res, next) => {
         }
       );
 
-      res.cookie("jwtToken", token, {
-        httpOnly: true,
-        maxAge: 43200000,
-        path: "/",
-      });
+      // res.cookie("jwtToken", token, {
+      //   httpOnly: true,
+      //   maxAge: 43200000,
+      //   path: "/",
+      // });
 
       return res.status(200).json({
         status: 200,
         message: "Login Successful",
         success: true,
+        cookie: token
       });
     })
     .catch((err) => {
-      console.log(err);
       return res.status(500).json({
         status: 500,
         message: "Internal Server Error",
@@ -79,8 +78,8 @@ const postAdminLogin = (req, res, next) => {
 };
 
 const postCreateAdmin = (req, res, next) => {
-  const userId = req.query.userId;
-  const password = req.query.password;
+  const userId = req.body.userId;
+  const password = req.body.password;
 
   if (!userId || !password) {
     return res.status(400).json({
@@ -92,7 +91,6 @@ const postCreateAdmin = (req, res, next) => {
 
   bcrypt.hash(password, 12, (err, hash) => {
     if (err) {
-      console.log(err);
       return res.status(500).json({
         status: 500,
         message: "Internal Server Error",
@@ -116,7 +114,6 @@ const postCreateAdmin = (req, res, next) => {
         });
       })
       .catch((err) => {
-        console.log(err);
         return res.redirect("/admin/home");
       });
   });
