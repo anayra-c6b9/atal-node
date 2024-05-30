@@ -63,7 +63,7 @@ const postAdminLogin = (req, res, next) => {
                 status: 200,
                 message: "Login Successful",
                 success: true,
-                // cookie: token
+                cookie: token,
             });
         })
         .catch((err) => {
