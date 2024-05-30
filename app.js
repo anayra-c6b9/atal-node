@@ -14,7 +14,10 @@ dotenv.config();
 const app = express();
 
 //cors
-const whitelist = ["https://atal-prod.web.app"];
+const whitelist = [
+    "https://atal-prod.web.app",
+    "https://salesiancollegescsd.web.app",
+];
 const corsOptionsDelegate = (req, callback) => {
     let corsOptions;
 
