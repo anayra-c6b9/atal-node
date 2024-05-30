@@ -56,6 +56,7 @@ const postAdminLogin = (req, res, next) => {
                 httpOnly: true,
                 secure: true,
                 sameSite: "None",
+                domain: "salesiancollegescsd.web.app",
             });
 
             return res.status(200).json({
