@@ -43,7 +43,7 @@ mongoose
     `mongodb+srv://${process.env.ATLAS_USER_NAME}:${process.env.ATLAS_PASSWORD}@cluster0.${process.env.ATLAS_CODE}.mongodb.net/${process.env.ATLAS_DB}?retryWrites=true&w=majority`
   )
   .then(() => {
-    app.listen(process.env.port || 3000);
+    app.listen(process.env.PORT || 3000);
   })
   .catch(() => {
     console.log("Error => Cannot connect to the database");
