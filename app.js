@@ -6,6 +6,7 @@ import { default as cookieParser } from "cookie-parser";
 import { adminRouter } from "./routes/admin.js";
 import { registrationRouter } from "./routes/registration.js";
 import { default as cors } from "cors";
+import { formsRouter } from "./routes/forms.js";
 
 // configuring dotenv to enable reading environment variables
 dotenv.config();
@@ -24,7 +25,7 @@ const corsOptionsDelegate = (req, callback) => {
     if (whitelist.indexOf(req.header("Origin")) !== -1) {
         corsOptions = { origin: true, credentials: true }; // Reflect (enable) the requested origin and credentials
     } else {
-        corsOptions = { origin: "*" }; // Disable credentials for other origins
+        corsOptions = { origin: "*", credentials: true }; // Disable credentials for other origins
     }
 
     callback(null, corsOptions); // Callback expects two parameters: error and options
@@ -40,6 +41,7 @@ app.use(cookieParser());
 app.use(authRouter);
 app.use(adminRouter);
 app.use(registrationRouter);
+app.use(formsRouter);
 
 mongoose
     .connect(
